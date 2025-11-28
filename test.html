@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="id">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Data Sidang</title>
+  <script src="/_sdk/data_sdk.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="min-h-full p-6">
+  <div class="w-full max-w-6xl mx-auto">
+   <div class="bg-white rounded-lg shadow-lg p-8">
+    <h1 id="form-title" class="text-3xl font-bold text-center mb-2">Form Pengumpulan Data Tahanan</h1>
+    <p class="text-center text-gray-600 mb-2">Silakan lengkapi semua informasi di bawah ini</p>
+    <div class="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded-r-lg">
+     <div class="flex items-start"><span class="text-yellow-600 text-2xl mr-3">📌</span>
+      <div>
+       <p class="font-bold text-yellow-800 mb-1">Catatan Penting:</p>
+       <p class="text-yellow-700 text-sm">Nama Terdakwa yang diinput harus sesuai dengan nama yang tertera pada <span class="font-semibold">Berkas Perkara</span>. Pastikan ejaan dan penulisan nama sudah benar.</p>
+      </div>
+     </div>
+    </div>
+    <div id="time-warning" class="hidden mb-6 p-4 bg-red-100 border-2 border-red-400 rounded-lg">
+     <p class="text-red-800 font-bold text-center text-lg">⏰ Form Ditutup</p>
+     <p class="text-red-700 text-center mt-2">Form pengisian tidak dapat diakses setelah jam 13:00 pada hari Selasa dan Jumat.</p>
+     <p class="text-red-600 text-center mt-1 text-sm">Silakan kembali pada hari dan waktu yang tersedia.</p>
+    </div>
+    <form id="sidang-form" class="space-y-6">
+     <div><label for="nama-tahanan" class="block text-sm font-semibold text-gray-700 mb-2">Nama Terdakwa</label> <input type="text" id="nama-tahanan" name="nama-tahanan" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition" placeholder="Masukkan nama lengkap terdakwa">
+     </div>
+     <div><label for="jaksa" class="block text-sm font-semibold text-gray-700 mb-2">Jaksa Penuntut Umum</label> <input type="text" id="jaksa" name="jaksa" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition" placeholder="Masukkan nama jaksa">
+     </div>
+     <div><label for="agenda-sidang" class="block text-sm font-semibold text-gray-700 mb-2">Agenda Sidang</label> <select id="agenda-sidang" name="agenda-sidang" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition bg-white"> <option value="">Pilih Agenda Sidang</option> <option value="Dakwaan">Dakwaan</option> <option value="Esepsi">Esepsi</option> <option value="Tanggapan Eksepsi">Tanggapan Eksepsi</option> <option value="Putusan Sela">Putusan Sela</option> <option value="Saksi">Saksi</option> <option value="Pembuktian">Pembuktian</option> <option value="Pemeriksaan Terdakwa">Pemeriksaan Terdakwa</option> <option value="Tuntutan">Tuntutan</option> <option value="Pledoi">Pledoi</option> <option value="Replik">Replik</option> <option value="Duplik">Duplik</option> <option value="Putusan">Putusan</option> </select>
+     </div>
+     <div><label for="pasal" class="block text-sm font-semibold text-gray-700 mb-2">Pasal</label> <input type="text" id="pasal" name="pasal" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition" placeholder="Contoh: Pasal 362 KUHP">
+     </div>
+     <div><label for="alamat" class="block text-sm font-semibold text-gray-700 mb-2">Alamat</label> <select id="alamat" name="alamat" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition bg-white" onchange="toggleManualAlamat()"> <option value="">Pilih Lokasi</option> <option value="Lapas Bulak Kapal">Lapas Bulak Kapal</option> <option value="Rutan Pondok Bambu">Rutan Pondok Bambu</option> <option value="lainnya">Lainnya (Ketik Manual)</option> </select> <input type="text" id="alamat-manual" name="alamat-manual" class="hidden w-full px-4 py-3 mt-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition" placeholder="Ketik alamat lokasi">
+     </div>
+     <div><label for="tanggal-sidang" class="block text-sm font-semibold text-gray-700 mb-2">Tanggal Sidang</label> <input type="date" id="tanggal-sidang" name="tanggal-sidang" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition">
+     </div><button type="submit" id="submit-btn" class="w-full bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-200 shadow-md hover:shadow-lg"> Simpan Data </button>
+    </form>
+    <div id="success-message" class="hidden mt-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+     ✓ Data berhasil disimpan!
+    </div>
+    <div id="error-message" class="hidden mt-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg"></div>
+   </div>
+   <div class="bg-white rounded-lg shadow-lg p-8 mt-6">
+    <div class="flex justify-between items-center mb-4">
+     <h2 class="text-xl font-bold text-gray-800">Data Tersimpan (<span id="record-count">0</span>)</h2><button id="clear-all-btn" onclick="clearAllData()" class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition duration-200 shadow-md hover:shadow-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed"> 🗑️ Hapus Semua Data </button>
+    </div>
+    <div id="clear-confirm" class="hidden mb-4 p-4 bg-yellow-50 border-2 border-yellow-400 rounded-lg">
+     <p class="text-yellow-800 font-semibold mb-3">⚠️ Yakin ingin menghapus semua data? Tindakan ini tidak dapat dibatalkan!</p>
+     <div class="flex gap-3"><button onclick="confirmClearAll()" class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition text-sm"> Ya, Hapus Semua </button> <button onclick="cancelClearAll()" class="bg-gray-400 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-500 transition text-sm"> Batal </button>
+     </div>
+    </div>
+    <div id="data-list" class="space-y-4"></div>
+   </div>
+  </div>
+  <script>
+    const defaultConfig = {
+      form_title: "Form Pengumpulan Data Tahanan",
+      submit_button_text: "Simpan Data",
+      primary_color: "#2563eb",
+      surface_color: "#ffffff",
+      text_color: "#374151",
+      success_color: "#10b981",
+      error_color: "#ef4444",
+      font_family: "system-ui",
+      font_size: 16
+    };
+
+    let allRecords = [];
+    let isClearing = false;
+
+    function toggleManualAlamat() {
+      const alamatSelect = document.getElementById('alamat');
+      const alamatManual = document.getElementById('alamat-manual');
+      
+      if (alamatSelect.value === 'lainnya') {
+        alamatManual.classList.remove('hidden');
+        alamatManual.focus();
+      } else {
+        alamatManual.classList.add('hidden');
+        alamatManual.value = '';
+      }
+    }
+
+    function isFormAccessible() {
+      const now = new Date();
+      const day = now.getDay(); // 0 = Minggu, 2 = Selasa, 5 = Jumat
+      const hour = now.getHours();
+      
+      // Jika hari Selasa (2) atau Jumat (5) dan jam >= 13:00, form ditutup
+      if ((day === 2 || day === 5) && hour >= 13) {
+        return false;
+      }
+      return true;
+    }
+
+    function updateFormAccess() {
+      const form = document.getElementById('sidang-form');
+      const timeWarning = document.getElementById('time-warning');
+      const submitBtn = document.getElementById('submit-btn');
+      const inputs = form.querySelectorAll('input, select, textarea');
+      
+      if (!isFormAccessible()) {
+        // Tutup form
+        timeWarning.classList.remove('hidden');
+        form.style.opacity = '0.5';
+        form.style.pointerEvents = 'none';
+        submitBtn.disabled = true;
+        
+        inputs.forEach(input => {
+          input.disabled = true;
+        });
+      } else {
+        // Buka form
+        timeWarning.classList.add('hidden');
+        form.style.opacity = '1';
+        form.style.pointerEvents = 'auto';
+        submitBtn.disabled = false;
+        
+        inputs.forEach(input => {
+          input.disabled = false;
+        });
+      }
+    }
+
+    const dataHandler = {
+      onDataChanged(data) {
+        allRecords = data;
+        renderDataList(data);
+        document.getElementById('record-count').textContent = data.length;
+        
+        const clearBtn = document.getElementById('clear-all-btn');
+        if (clearBtn) {
+          clearBtn.disabled = data.length === 0;
+        }
+      }
+    };
+
+    async function onConfigChange(config) {
+      const formTitle = document.getElementById('form-title');
+      const submitBtn = document.getElementById('submit-btn');
+      const body = document.body;
+      const card = document.querySelector('.bg-white');
+      const inputs = document.querySelectorAll('input, textarea, select');
+      const labels = document.querySelectorAll('label');
+
+      const customFont = config.font_family || defaultConfig.font_family;
+      const baseFontStack = 'system-ui, -apple-system, sans-serif';
+      const baseSize = config.font_size || defaultConfig.font_size;
+      const primaryColor = config.primary_color || defaultConfig.primary_color;
+      const surfaceColor = config.surface_color || defaultConfig.surface_color;
+      const textColor = config.text_color || defaultConfig.text_color;
+
+      body.style.background = `linear-gradient(135deg, ${primaryColor}15 0%, ${primaryColor}30 100%)`;
+      body.style.fontFamily = `${customFont}, ${baseFontStack}`;
+
+      card.style.backgroundColor = surfaceColor;
+
+      formTitle.textContent = config.form_title || defaultConfig.form_title;
+      formTitle.style.fontSize = `${baseSize * 1.875}px`;
+      formTitle.style.color = textColor;
+      formTitle.style.fontFamily = `${customFont}, ${baseFontStack}`;
+
+      submitBtn.textContent = config.submit_button_text || defaultConfig.submit_button_text;
+      submitBtn.style.backgroundColor = primaryColor;
+      submitBtn.style.fontSize = `${baseSize}px`;
+
+      inputs.forEach(input => {
+        input.style.fontSize = `${baseSize}px`;
+        input.style.fontFamily = `${customFont}, ${baseFontStack}`;
+      });
+
+      labels.forEach(label => {
+        label.style.fontSize = `${baseSize * 0.875}px`;
+        label.style.color = textColor;
+        label.style.fontFamily = `${customFont}, ${baseFontStack}`;
+      });
+
+      const allText = document.querySelectorAll('p, h2, span, div');
+      allText.forEach(el => {
+        el.style.fontFamily = `${customFont}, ${baseFontStack}`;
+      });
+    }
+
+    function renderDataList(data) {
+      const container = document.getElementById('data-list');
+      
+      if (data.length === 0) {
+        container.innerHTML = '<p class="text-gray-500 text-center py-4">Belum ada data tersimpan</p>';
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse bg-white rounded-lg overflow-hidden shadow">
+            <thead>
+              <tr class="bg-blue-600 text-white">
+                <th class="px-4 py-3 text-left text-sm font-semibold">No</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold">Alamat</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold">Nama Terdakwa</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold">Jaksa Penuntut Umum</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold">Agenda Sidang</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold">Pasal</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold">Tanggal Sidang</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold">Waktu Input</th>
+                <th class="px-4 py-3 text-center text-sm font-semibold">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${data.map((record, index) => `
+                <tr class="border-b border-gray-200 hover:bg-gray-50 transition" data-record-id="${record.__backendId}">
+                  <td class="px-4 py-3 text-sm text-gray-700">${index + 1}</td>
+                  <td class="px-4 py-3 text-sm text-gray-700">${record.alamat}</td>
+                  <td class="px-4 py-3 text-sm text-gray-800 font-medium">${record.nama_tahanan}</td>
+                  <td class="px-4 py-3 text-sm text-gray-700">${record.jaksa}</td>
+                  <td class="px-4 py-3 text-sm text-gray-700">${record.agenda_sidang}</td>
+                  <td class="px-4 py-3 text-sm text-gray-700">${record.pasal}</td>
+                  <td class="px-4 py-3 text-sm text-gray-700">${new Date(record.tanggal_sidang).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                  <td class="px-4 py-3 text-sm text-gray-600">${new Date(record.waktu_input).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
+                  <td class="px-4 py-3 text-center">
+                    <button 
+                      onclick="deleteRecord('${record.__backendId}')" 
+                      class="text-red-600 hover:text-red-800 hover:bg-red-50 px-3 py-1 rounded transition text-sm font-semibold"
+                    >
+                      🗑️ Hapus
+                    </button>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function clearAllData() {
+      const confirmBox = document.getElementById('clear-confirm');
+      confirmBox.classList.remove('hidden');
+    }
+
+    function cancelClearAll() {
+      const confirmBox = document.getElementById('clear-confirm');
+      confirmBox.classList.add('hidden');
+    }
+
+    async function confirmClearAll() {
+      if (isClearing || allRecords.length === 0) return;
+
+      isClearing = true;
+      const clearBtn = document.getElementById('clear-all-btn');
+      const originalText = clearBtn.textContent;
+      clearBtn.textContent = 'Menghapus...';
+      clearBtn.disabled = true;
+
+      let hasError = false;
+
+      for (const record of allRecords) {
+        const result = await window.dataSdk.delete(record);
+        if (!result.isOk) {
+          hasError = true;
+          showError('Gagal menghapus beberapa data: ' + result.error.message);
+          break;
+        }
+      }
+
+      if (!hasError) {
+        showSuccess('Semua data berhasil dihapus!');
+      }
+
+      clearBtn.textContent = originalText;
+      clearBtn.disabled = false;
+      isClearing = false;
+      cancelClearAll();
+    }
+
+    async function deleteRecord(backendId) {
+      const record = allRecords.find(r => r.__backendId === backendId);
+      if (!record) return;
+
+      const result = await window.dataSdk.delete(record);
+      
+      if (!result.isOk) {
+        showError('Gagal menghapus data: ' + result.error.message);
+      }
+    }
+
+    function showSuccess(message = '✓ Data berhasil disimpan!') {
+      const successMsg = document.getElementById('success-message');
+      successMsg.textContent = message;
+      successMsg.classList.remove('hidden');
+      setTimeout(() => {
+        successMsg.classList.add('hidden');
+      }, 3000);
+    }
+
+    function showError(message) {
+      const errorMsg = document.getElementById('error-message');
+      errorMsg.textContent = '✗ ' + message;
+      errorMsg.classList.remove('hidden');
+      setTimeout(() => {
+        errorMsg.classList.add('hidden');
+      }, 5000);
+    }
+
+    document.getElementById('sidang-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (!isFormAccessible()) {
+        showError('Form tidak dapat diakses setelah jam 13:00 pada hari Selasa dan Jumat.');
+        return;
+      }
+
+      if (allRecords.length >= 999) {
+        showError('Maksimum 999 data tercapai. Silakan hapus beberapa data terlebih dahulu.');
+        return;
+      }
+
+      const submitBtn = document.getElementById('submit-btn');
+      const originalText = submitBtn.textContent;
+      submitBtn.textContent = 'Menyimpan...';
+      submitBtn.disabled = true;
+
+      const alamatSelect = document.getElementById('alamat').value;
+      const alamatManual = document.getElementById('alamat-manual').value;
+      const alamatFinal = alamatSelect === 'lainnya' ? alamatManual : alamatSelect;
+
+      const formData = {
+        alamat: alamatFinal,
+        nama_tahanan: document.getElementById('nama-tahanan').value,
+        jaksa: document.getElementById('jaksa').value,
+        agenda_sidang: document.getElementById('agenda-sidang').value,
+        pasal: document.getElementById('pasal').value,
+        tanggal_sidang: document.getElementById('tanggal-sidang').value,
+        waktu_input: new Date().toISOString()
+      };
+
+      const result = await window.dataSdk.create(formData);
+
+      submitBtn.textContent = originalText;
+      submitBtn.disabled = false;
+
+      if (result.isOk) {
+        const jaksaValue = document.getElementById('jaksa').value;
+        const alamatValue = document.getElementById('alamat').value;
+        document.getElementById('sidang-form').reset();
+        document.getElementById('jaksa').value = jaksaValue;
+        document.getElementById('alamat').value = alamatValue;
+        document.getElementById('tanggal-sidang').value = '';
+        document.getElementById('alamat-manual').classList.add('hidden');
+        document.getElementById('alamat-manual').value = '';
+        showSuccess();
+      } else {
+        showError('Gagal menyimpan data: ' + result.error.message);
+      }
+    });
+
+    async function init() {
+      const initResult = await window.dataSdk.init(dataHandler);
+      if (!initResult.isOk) {
+        showError('Gagal menginisialisasi sistem: ' + initResult.error.message);
+      }
+
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange,
+          mapToCapabilities: (config) => ({
+            recolorables: [
+              {
+                get: () => config.primary_color || defaultConfig.primary_color,
+                set: (value) => {
+                  config.primary_color = value;
+                  window.elementSdk.setConfig({ primary_color: value });
+                }
+              },
+              {
+                get: () => config.surface_color || defaultConfig.surface_color,
+                set: (value) => {
+                  config.surface_color = value;
+                  window.elementSdk.setConfig({ surface_color: value });
+                }
+              },
+              {
+                get: () => config.text_color || defaultConfig.text_color,
+                set: (value) => {
+                  config.text_color = value;
+                  window.elementSdk.setConfig({ text_color: value });
+                }
+              }
+            ],
+            borderables: [],
+            fontEditable: {
+              get: () => config.font_family || defaultConfig.font_family,
+              set: (value) => {
+                config.font_family = value;
+                window.elementSdk.setConfig({ font_family: value });
+              }
+            },
+            fontSizeable: {
+              get: () => config.font_size || defaultConfig.font_size,
+              set: (value) => {
+                config.font_size = value;
+                window.elementSdk.setConfig({ font_size: value });
+              }
+            }
+          }),
+          mapToEditPanelValues: (config) => new Map([
+            ["form_title", config.form_title || defaultConfig.form_title],
+            ["submit_button_text", config.submit_button_text || defaultConfig.submit_button_text]
+          ])
+        });
+      }
+
+      // Cek akses form saat halaman dimuat
+      updateFormAccess();
+
+      // Cek setiap 1 menit apakah form masih bisa diakses
+      setInterval(updateFormAccess, 60000);
+    }
+
+    init();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a56d4420308a17f',t:'MTc2NDMwMTA3MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
